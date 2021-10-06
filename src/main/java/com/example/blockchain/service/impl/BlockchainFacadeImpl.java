@@ -96,6 +96,7 @@ public class BlockchainFacadeImpl implements BlockchainFacade {
         peerService.addPeers(List.of(sender));
 
         List<Peer> peers = peerListDto.getPeerList().stream().map(Peer::new).collect(Collectors.toList());
+        peerService.addPeers(peers);
         int chainLength = blockchainService.getChain().size();
         for (Peer peer : peers) {
             if (!peerService.isContains(peer)) {
@@ -103,7 +104,6 @@ public class BlockchainFacadeImpl implements BlockchainFacade {
                 peerService.sharePeersWith(peer);
             }
         }
-        peerService.addPeers(peers);
     }
 
     @Override
@@ -127,8 +127,8 @@ public class BlockchainFacadeImpl implements BlockchainFacade {
         List<Block> newChain = null;
         List<Peer> peers = peerService.getActivePeers();
         for (Peer peer : peers) {
-            List<Block> otherChain = peerService.getChainFromPeer(peer).getChain();
-            if (maxLength < otherChain.size() && blockchainService.isValidChain(otherChain)) {
+            List<Block> otherChain = peerService.getChainFromPeer(peer).map(ChainDto::getChain).orElse(null);
+            if (otherChain != null && maxLength < otherChain.size() && blockchainService.isValidChain(otherChain)) {
                 maxLength = otherChain.size();
                 newChain = otherChain;
             }

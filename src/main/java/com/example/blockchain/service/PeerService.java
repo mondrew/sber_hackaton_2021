@@ -7,6 +7,7 @@ import com.example.blockchain.model.Peer;
 import com.example.blockchain.model.Transaction;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PeerService {
     void addPeers(List<Peer> peers);
@@ -18,6 +19,6 @@ public interface PeerService {
     void sendPing(Peer peer, int chainLength);
     void sharePeersWith(Peer recipient);
     List<Peer> getActivePeers();
-    ChainDto getChainFromPeer(Peer peer);
+    Optional<ChainDto> getChainFromPeer(Peer peer);
     MetaDto getMeta();
 }
