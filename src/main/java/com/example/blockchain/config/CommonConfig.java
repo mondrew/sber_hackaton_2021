@@ -1,6 +1,5 @@
 package com.example.blockchain.config;
 
-import com.example.blockchain.service.CryptographyService;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
