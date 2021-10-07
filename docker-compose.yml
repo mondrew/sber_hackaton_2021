@@ -3,15 +3,23 @@ services:
   backend:
     build: ./chat-backend
     image: "blockchain/chat-backend"
-    container_name: "chat-backend"
+    container_name: "backend"
+    networks:
+      - some
     ports:
       - "8080:8080"
 
   frontend:
     build: ./chat-frontend
     image: "blockchain/chat-frontend"
-    container_name: "chat-frontend"
+    container_name: "frontend"
+    networks:
+      - some
     ports:
       - "3000:3000"
     depends_on:
       - backend
+
+networks:
+  some:
+    driver: bridge
