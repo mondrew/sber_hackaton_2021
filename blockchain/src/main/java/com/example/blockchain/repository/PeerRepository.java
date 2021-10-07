@@ -7,8 +7,8 @@ import java.util.List;
 public interface PeerRepository {
 
     void savePeers(List<Peer> newPeers);
-    void removePeer(Peer peer);
-    List<Peer> getActivityPeers();
+    void removePeer(Peer peer); // or remove not active peers (for last 3 months for example)
+    List<Peer> getPeers();
     boolean isContains(Peer peer);
 
 }

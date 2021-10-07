@@ -2,7 +2,6 @@ package com.example.blockchain.service.impl;
 
 import com.example.blockchain.repository.TransactionRepository;
 import com.example.blockchain.model.Transaction;
-import com.example.blockchain.service.CryptographyService;
 import com.example.blockchain.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,18 +21,14 @@ public class TransactionServiceImpl implements TransactionService {
     private String MINING_REWARD_SENDER;
 
     private final TransactionRepository transactionRepository;
-    private final CryptographyService cryptographyService;
+    private final CryptographyServiceImpl cryptographyServiceImpl;
 
     @Override
     public boolean isValidTransaction(Transaction transaction) {
-//        try {
-//            return cryptographyService.verifyDigitalSignature(transaction.getMessage(), transaction.getSender()) != null &&
-//                    transaction.getAmount() >= 0 && transaction.getFee() >= 0;
-//        } catch (Exception e) {
-//            log.info("Fake transaction or invalid key: " + transaction);
-//            return false;
-//        }
-        return true; //TODO: вернуть как было
+        return true;
+//        return cryptographyServiceImpl.verifyDigitalSignature(transaction.getMessage(), transaction.getSender()) &&
+//                transaction.getAmount() >= 0 &&
+//                transaction.getFee() >= 0;
     }
 
     @Override

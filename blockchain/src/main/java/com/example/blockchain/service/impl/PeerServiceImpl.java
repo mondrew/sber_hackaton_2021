@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -23,25 +24,22 @@ public class PeerServiceImpl implements PeerService {
 
     private final PeerRepository peerRepository;
     private final WebClient webClient;
-    private final String externalIp;
+    private final String ip;
     private final int port;
 
     public PeerServiceImpl(PeerRepository peerRepository, WebClient webClient, @Value("${server.port}") int port) {
         this.peerRepository = peerRepository;
         this.webClient = webClient;
-        this.externalIp = getExternalIp();
+//        this.ip = getIp();
+        this.ip = "localhost";
         this.port = port;
-        log.info("Your node address - " + externalIp + ":" + port);
+        log.info("Your node address - " + ip + ":" + port);
     }
 
     @Override
     public void addPeers(List<Peer> peers) {
         log.debug("Added/updated peers: " + peers);
-        peerRepository.savePeers(peers
-                .stream()
-                .peek(peer -> peer.setLastSeen(new Date(System.currentTimeMillis())))
-                .collect(Collectors.toList())
-        );
+        peerRepository.savePeers(peers);
     }
 
     @Override
@@ -51,7 +49,8 @@ public class PeerServiceImpl implements PeerService {
 
     @Override
     public void broadcastBlock(Block block) {
-        List<Peer> peers = peerRepository.getActivityPeers();
+        // Mb first we send block hash and then -> block (not sure) -> to minimize traffic
+        List<Peer> peers = getActivePeers();
         for (Peer peer : peers) {
             sendBlock(peer, block);
         }
@@ -59,17 +58,20 @@ public class PeerServiceImpl implements PeerService {
 
     @Override
     public void sendBlock(Peer peer, Block block) {
-        log.debug(String.format("Send block %s\nTo peer %s", block, peer));
+    log.debug(String.format("Send block %s\nTo peer %s", block, peer));
         webClient
                 .post()
-                .uri(peer.toString() + "/block")
+                .uri("http://" + peer.toString() + "/block")
                 .body(Mono.just(new BlockDto(getMeta(), block)), BlockDto.class)
-                .retrieve();
+                .retrieve().bodyToMono(String.class).doOnError(throwable -> peerRepository.removePeer(peer)).subscribe();
+
     }
 
     @Override
-    public void broadcastTransaction(Transaction transaction) {
-        List<Peer> peers = peerRepository.getActivityPeers();
+    public void broadcastTransaction(Transaction transaction) { // 1. Mb with transaction service?
+        // in this method we should first send transaction hash (to minimize traffic)
+        // If the recipient doesn't have this transaction -> then we send it to him
+        List<Peer> peers = getActivePeers();
         for (Peer peer : peers) {
             sendTransaction(peer, transaction);
         }
@@ -80,37 +82,62 @@ public class PeerServiceImpl implements PeerService {
         log.debug(String.format("Send transaction %s\nTo peer %s", transaction, peer));
         webClient
                 .post()
-                .uri(peer.toString(), "/transaction")
+                .uri("http://" + peer.toString() + "/transaction")
                 .body(Mono.just(new TransactionDto(getMeta(), transaction)), TransactionDto.class)
-                .retrieve();
+                .retrieve().bodyToMono(String.class).doOnError(throwable -> peerRepository.removePeer(peer)).subscribe();
     }
 
     @Override
-    public void shareContactsWith(Peer recipient) {
+    public void sharePeersWith(Peer recipient) {
+
         log.debug("Share contacts with peer " + recipient);
-        List<Peer> peers = peerRepository.getActivityPeers();
+        List<String> peers = getActivePeers()
+                .stream()
+                .map(Peer::getAddress)
+                .collect(Collectors.toList());
         webClient
                 .post()
-                .uri("http://"+ recipient.toString() + "/peer")
+                .uri("http://" + recipient.toString() + "/peer")
                 .body(Mono.just(new PeerListDto(getMeta(), peers)), PeerListDto.class)
-                .retrieve();
-        }
+                .retrieve().bodyToMono(String.class).doOnError(throwable -> peerRepository.removePeer(recipient)).subscribe();
+    }
+
+    @Override
+    public List<Peer> getActivePeers() {
+        List<Peer> peers = peerRepository.getPeers();
+        return peers.stream()
+                .sorted(Comparator.comparing(Peer::getLastSeen))
+                .collect(Collectors.toList()).subList(0, Math.min(peers.size(), 20));
+    }
+
+    @Override
+    public Optional<ChainDto> getChainFromPeer(Peer peer) {
+            return Optional.ofNullable(webClient
+                    .get()
+                    .uri("http://" + peer.toString() + "/chain")
+                    .retrieve()
+                    .bodyToMono(ChainDto.class).doOnError(throwable -> {
+                        peerRepository.removePeer(peer);
+                    }).block());
+    }
+
 
     @Override
     public void sendPing(Peer peer, int chainLength) {
-        log.debug("Send ping to peer " + peer);
-            webClient
-                    .post()
-                    .uri("http://"+ peer.toString() + "/ping")
-                    .body(Mono.just(new PingDto(getMeta(), chainLength)), PingDto.class)
-                    .retrieve();
+    log.debug("Send ping to peer " + peer);
+        webClient
+                .post()
+                .uri("http://" + peer.toString() + "/ping")
+                .body(Mono.just(new PingDto(getMeta(), chainLength)), PingDto.class)
+                .retrieve().bodyToMono(String.class).doOnError(throwable -> peerRepository.removePeer(peer)).subscribe();
     }
 
-    private MetaDto getMeta() {
-        return new MetaDto(externalIp + ":" + port);
+    @Override
+    public MetaDto getMeta() {
+        return new MetaDto(ip + ":" + port);
     }
 
-    private String getExternalIp() {
+    private String getIp() {
         return Objects.requireNonNull(webClient
                 .get()
                 .uri("http://checkip.amazonaws.com")
