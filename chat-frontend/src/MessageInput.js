@@ -46,6 +46,7 @@ class MessageInput extends Component {
                 <Row fluid>
                     <Col xs={8}>
                         <Form.Control
+                            autoFocus={true}
                             type="text"
                             placeholder="Введите сообщение"
                             value={this.state.message}

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +16,7 @@ public class ChatMessage {
     private String senderName;
     private String recipientName;
     private String message;
-    private LocalDateTime timestamp;
+    private Timestamp timestamp;
 
     public ChatMessage(Transaction transaction) {
         this.sender = transaction.getSender();

@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,9 +16,14 @@ import java.util.List;
 public class ChatController {
     private final ChatMessageService chatMessageService;
 
-    @MessageMapping("/chat")
-    public void processMessage(@Payload ChatMessage chatMessage) {
-        chatMessageService.sendMessage(chatMessage);
+//    @MessageMapping("/chat")
+//    public void processMessage(@Payload ChatMessage chatMessage) {
+//        chatMessageService.sendMessage(chatMessage);
+//    }
+
+    @PostMapping("/message")
+    public void sendMessage(@RequestBody ChatMessage message) {
+        chatMessageService.sendMessage(message);
     }
 
     @GetMapping("/messages/{sender}/{recipient}")
