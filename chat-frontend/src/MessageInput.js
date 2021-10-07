@@ -26,15 +26,15 @@ class MessageInput extends Component {
     }
 
     handleSubmit(e) {
-        if (this.state.publicKey == null) {
+        if (localStorage.getItem("publicKey") == null) {
             alert("Войдите в систему")
             return
         }
 
         let newMessage = {
-            senderPublicKey: this.state.publicKey,
+            senderPublicKey: localStorage.getItem("publicKey"),
             recipientPublicKey: this.props.recipientKey,
-            senderLogin: this.state.userName,
+            senderLogin: localStorage.getItem("userName"),
             recipientLogin: this.props.recipientName,
             message: this.state.message,
             timestamp: Date.now()
