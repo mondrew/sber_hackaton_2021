@@ -5,12 +5,13 @@ import axios from "axios";
 class MessageList extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             messages: [],
             publicKey: localStorage.getItem("publicKey"),
-            userName: localStorage.getItem("userName")
+            userName: localStorage.getItem("userName"),
         }
+
+        // this.getLoginByPublicKey = this.getLoginByPublicKey.bind(this)
     }
 
     componentDidMount() {
@@ -24,14 +25,14 @@ class MessageList extends Component {
                 });
     }
 
-    getLoginByPublicKey(key) {
-        let user = null
-        axios.get("http://localhost:8080/key/" + key).then((res)=> {
-            user = res.data.login
-        })
-            .catch((error) => console.log(error))
-        return user;
-    }
+    // getLoginByPublicKey(key) {
+    //     let login
+    //     axios.get("http://localhost:8080/user/key/" + key)
+    //         .then((res)=> {
+    //             login = res.data.login
+    //     })
+    //     return login
+    // }
 
     render() {
         return (
@@ -39,7 +40,7 @@ class MessageList extends Component {
                 {
                     this.state.messages.map(
                         message =>
-                            <Row class={message.senderPublicKey === this.state.publicKey ? "text-right" : "text-left"}>{this.getLoginByPublicKey(message.senderPublicKey) + ": "}{message.message}</Row>
+                            <Row class={message.senderPublicKey === this.state.publicKey ? "text-right" : "text-left"}>{message.senderPublicKey + ": "}{message.message}</Row>
                     )
                 }
             </Container>
