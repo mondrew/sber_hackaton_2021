@@ -1,4 +1,4 @@
-package com.example.blockchain.dto;
+package com.example.dchat.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MetaDto {
-    String senderAddress;
+public class TransactionMessage {
+    private String type;
+    private String message;
 }

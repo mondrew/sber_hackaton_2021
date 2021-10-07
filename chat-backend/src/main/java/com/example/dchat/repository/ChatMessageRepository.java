@@ -33,8 +33,8 @@ public class ChatMessageRepository {
     }
 
     private boolean isRequiredTransaction(String chatId, Transaction transaction) {
-        String sender = transaction.getSender();
-        String recipient = transaction.getRecipient();
+        String sender = transaction.getSenderPublicKey();
+        String recipient = transaction.getRecipientPublicKey();
         return chatId.equals(sender + "_" + recipient) || chatId.equals(recipient + "_" + sender);
     }
 }

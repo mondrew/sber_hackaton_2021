@@ -13,16 +13,16 @@ import java.sql.Timestamp;
 public class ChatMessage {
     private String sender;
     private String recipient;
-    private String senderName;
-    private String recipientName;
+    private String senderLogin;
+    private String recipientLogin;
     private String message;
     private Timestamp timestamp;
 
     public ChatMessage(Transaction transaction) {
-        this.sender = transaction.getSender();
-        this.recipient = transaction.getRecipient();
+        this.sender = transaction.getSenderPublicKey();
+        this.recipient = transaction.getRecipientPublicKey();
         this.message = transaction.getMessage();
-        //todo: add timestamp
+        this.timestamp = transaction.getTimestamp();
         //todo: перенести в mapper
     }
 }

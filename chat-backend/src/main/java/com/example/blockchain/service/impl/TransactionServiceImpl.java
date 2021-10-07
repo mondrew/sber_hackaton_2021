@@ -1,13 +1,15 @@
 package com.example.blockchain.service.impl;
 
-import com.example.blockchain.model.Transaction;
 import com.example.blockchain.repository.TransactionRepository;
+import com.example.blockchain.model.Transaction;
 import com.example.blockchain.service.TransactionService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.List;
 
 @Log4j2
 @Service
@@ -33,10 +35,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public boolean isValidTransactionsFromBlock(List<Transaction> transactions) {
         return transactions != null &&
-            transactions.size() > 1 &&
-            transactions.get(0).getSender().equals(MINING_REWARD_SENDER) &&
-            transactions.get(0).getAmount().equals(MINING_REWARD_AMOUNT) &&
-            transactions.stream().skip(1).allMatch(this::isValidTransaction);
+                transactions.size() > 1 &&
+                transactions.get(0).getSenderPublicKey().equals(MINING_REWARD_SENDER) &&
+                transactions.get(0).getAmount().equals(MINING_REWARD_AMOUNT) &&
+                transactions.stream().skip(1).allMatch(this::isValidTransaction);
     }
 
     @Override
@@ -66,6 +68,8 @@ public class TransactionServiceImpl implements TransactionService {
         //TODO: подумать, нужно ли что-то шифровать/подписывать
         //TODO: в получателя установить public key текущего узла.
         //TODO: вынести значения в константы, когда станет понятно, как это должно выглядеть
-        return new Transaction(MINING_REWARD_SENDER, "PUBLIC KEY", "Reward for a new block", MINING_REWARD_AMOUNT, 0.0);
+        return new Transaction(MINING_REWARD_SENDER, "PUBLIC KEY",
+                "Reward for a new block", MINING_REWARD_AMOUNT,
+                0.0, new Timestamp(System.currentTimeMillis()));
     }
 }
