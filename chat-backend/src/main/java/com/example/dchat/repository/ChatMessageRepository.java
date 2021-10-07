@@ -5,6 +5,8 @@ import com.example.dchat.model.ChatMessage;
 import com.example.blockchain.model.Block;
 import com.example.blockchain.model.Transaction;
 import com.example.blockchain.service.BlockchainFacade;
+import com.example.dchat.model.TransactionMessage;
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -28,8 +30,24 @@ public class ChatMessageRepository {
                 .collect(Collectors.toList());
     }
 
-    public void save(ChatMessage message) {
-        blockchainFacade.addTransaction(transactionMessageMapper.chatMessageToTransaction(message));
+    public ChatMessage save(ChatMessage message) {
+        String transactionMessage = new Gson().toJson(new TransactionMessage("message", message.getMessage()));
+        blockchainFacade.addTransaction(transactionMessageMapper.chatMessageToTransaction(message, transactionMessage));
+        return message;
+    }
+
+    public List<ChatMessage> getAllMessages() {
+        return blockchainFacade.getChain().getChain()
+                .stream()
+                .skip(1)
+                .flatMap(block -> block.getTransactions().stream())
+                .filter(transaction -> !transaction.getSenderPublicKey().equals("BLOCK_CHAIN_BANK"))
+                .filter(transaction -> !transaction.getSenderPublicKey().equals("BLOCKCHAIN_SERVICE_REG_NEW_USER"))
+                .filter(t -> new Gson().
+                        fromJson(t.getMessage(), TransactionMessage.class)
+                        .getType().equals("message"))
+                .map(ChatMessage::new)
+                .collect(Collectors.toList());
     }
 
     private boolean isRequiredTransaction(String chatId, Transaction transaction) {

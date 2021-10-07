@@ -14,11 +14,13 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
 
-    public void sendMessage(ChatMessage chatMessage) {
-        chatMessageRepository.save(chatMessage);
+    public ChatMessage sendMessage(ChatMessage chatMessage) {
+        return chatMessageRepository.save(chatMessage);
     }
 
     public List<ChatMessage> getMessages(String chatId) {
         return chatMessageRepository.findByChatId(chatId);
     }
+
+    public List<ChatMessage> getAllMessages() {return chatMessageRepository.getAllMessages();}
 }

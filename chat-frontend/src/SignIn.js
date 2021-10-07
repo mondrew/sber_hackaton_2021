@@ -1,8 +1,8 @@
 import React, {Component} from "react";
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
+import {Button, Form, Row} from "react-bootstrap";
 import axios from "axios";
 
-const SERVER_URL = "http://localhost:8080/message"
+const SERVER_URL = "http://localhost:8080/users"
 
 class SignIn extends Component {
     constructor(props) {
@@ -11,18 +11,26 @@ class SignIn extends Component {
         this.state = {
             userName: localStorage.getItem("userName"),
             publicKey: localStorage.getItem("publicKey"),
-            privateKey: localStorage.getItem("privateKey")
+            privateKey: localStorage.getItem("privateKey"),
+            phoneNumber: localStorage.getItem("phoneNumber")
         }
 
         this.handleUserNameChange = this.handleUserNameChange.bind(this);
         this.handlePublicKeyChange = this.handlePublicKeyChange.bind(this);
         this.handlePrivateKeyChange = this.handlePrivateKeyChange.bind(this);
+        this.handlePhoneNumberChange = this.handlePhoneNumberChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleUserNameChange(e) {
         this.setState({
             userName: e.target.value
+        })
+    }
+
+    handlePhoneNumberChange(e) {
+        this.setState({
+            phoneNumber: e.target.value
         })
     }
 
@@ -39,9 +47,25 @@ class SignIn extends Component {
     }
 
     handleSubmit(e) {
-        localStorage.setItem("userName", this.state.userName)
-        localStorage.setItem("publicKey", this.state.publicKey)
-        localStorage.setItem("privateKey", this.state.privateKey)
+        let user = {
+            publicKey: this.state.publicKey,
+            login: this.state.userName,
+            phoneNumber: this.state.phoneNumber
+        }
+
+        axios.post(SERVER_URL, user).then((res) => {
+                if (res.data.login === undefined) {
+                    alert("Логин/публичный ключ уже занят");
+                } else {
+                    localStorage.setItem("userName", this.state.userName)
+                    localStorage.setItem("publicKey", this.state.publicKey)
+                    localStorage.setItem("privateKey", this.state.privateKey)
+                    localStorage.setItem("phoneNumber", this.state.phoneNumber)
+                    alert("Вы успешно зарегистрировались и вошли в систему")
+                    this.forceUpdate()
+                }
+            })
+            .catch((error)=>alert(error));
     }
 
     checkAuth() {
@@ -59,26 +83,31 @@ class SignIn extends Component {
             )
         } else {
             return(
-                <Form onSubmit={this.handleSubmit}>
+                <Form>
                     <Form.Control
                         type="text"
                         placeholder="Введите уникальный логин"
-                        value={this.state.userName}
+                        value={this.state.userName == null ? "" : this.state.userName}
                         onChange={this.handleUserNameChange}
                     />
                     <Form.Control
                         type="text"
                         placeholder="Введите свой публичный ключ"
-                        value={this.state.publicKey}
+                        value={this.state.publicKey == null ? "" : this.state.publicKey}
                         onChange={this.handlePublicKeyChange}
                     />
                     <Form.Control
                         type="text"
                         placeholder="Введите свой приватный ключ"
-                        value={this.state.privateKey}
+                        value={this.state.privateKey == null ? "" : this.state.privateKey}
                         onChange={this.handlePrivateKeyChange}
+                    />                    <Form.Control
+                        type="text"
+                        placeholder="Введите свой номер телефона"
+                        value={this.state.phoneNumber == null ? "" : this.state.phoneNumber}
+                        onChange={this.handlePhoneNumberChange}
                     />
-                    <Button type={"submit"}>Подтвердить</Button>
+                    <Button onClick={this.handleSubmit}>Подтвердить</Button>
                 </Form>
             )
         }

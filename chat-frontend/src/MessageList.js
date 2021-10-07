@@ -14,7 +14,7 @@ class MessageList extends Component {
     }
 
     componentDidMount() {
-           axios.get("http://localhost:8080/messages/" + this.state.publicKey + "/" + this.props.companionKey)
+           axios.get("http://localhost:8080/messages")
                 .then((res) => {
                     if (res) {
                         this.setState({
@@ -24,13 +24,22 @@ class MessageList extends Component {
                 });
     }
 
+    getLoginByPublicKey(key) {
+        let user = null
+        axios.get("http://localhost:8080/key/" + key).then((res)=> {
+            user = res.data.login
+        })
+            .catch((error) => console.log(error))
+        return user;
+    }
+
     render() {
         return (
             <Container>
                 {
                     this.state.messages.map(
                         message =>
-                            <Row class={message.sender === this.state.publicKey ? "text-right" : "text-left"}>{message.sender + ": "}{message.message}</Row>
+                            <Row class={message.senderPublicKey === this.state.publicKey ? "text-right" : "text-left"}>{this.getLoginByPublicKey(message.senderPublicKey) + ": "}{message.message}</Row>
                     )
                 }
             </Container>

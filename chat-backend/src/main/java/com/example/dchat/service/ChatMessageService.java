@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface ChatMessageService {
 
-    void sendMessage(ChatMessage chatMessage);
+    ChatMessage sendMessage(ChatMessage chatMessage);
     List<ChatMessage> getMessages(String chatId);
+    List<ChatMessage> getAllMessages();
 }

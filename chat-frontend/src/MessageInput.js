@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import axios from "axios";
 import {Form, Button, Row, Col} from "react-bootstrap";
 
-const SERVER_URL = "http://localhost:8080/message"
+const SERVER_URL = "http://localhost:8080/messages"
 
 class MessageInput extends Component {
     constructor(props) {
@@ -26,24 +26,29 @@ class MessageInput extends Component {
     }
 
     handleSubmit(e) {
+        if (this.state.publicKey == null) {
+            alert("Войдите в систему")
+            return
+        }
+
         let newMessage = {
-            sender: this.state.publicKey,
-            recipient: this.props.recipientKey,
-            senderName: this.state.userName,
-            recipientName: this.props.recipientName,
+            senderPublicKey: this.state.publicKey,
+            recipientPublicKey: this.props.recipientKey,
+            senderLogin: this.state.userName,
+            recipientLogin: this.props.recipientName,
             message: this.state.message,
             timestamp: Date.now()
         }
 
-        axios.post(SERVER_URL, newMessage)
-            .then(() => this.setState({message: ""}))
-            .catch((error)=>console.log(error));
+        axios.post(SERVER_URL, newMessage,)
+            .then((res)=>this.setState({message: ""}))
+            .catch((error)=>alert(error));
     }
 
     render() {
         return(
-            <Form onSubmit={this.handleSubmit}>
-                <Row fluid>
+            <Form>
+                <Row>
                     <Col xs={8}>
                         <Form.Control
                             autoFocus={true}
@@ -54,7 +59,7 @@ class MessageInput extends Component {
                         />
                     </Col>
                     <Col xs={4}>
-                        <Button type="submit">Отправить</Button>
+                        <Button onClick={this.handleSubmit}>Отправить</Button>
                     </Col>
                 </Row>
             </Form>
