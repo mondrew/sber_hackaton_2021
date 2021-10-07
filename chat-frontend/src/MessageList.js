@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, ListGroup} from "react-bootstrap";
+import {Container, Row} from "react-bootstrap";
 import axios from "axios";
 
 class MessageList extends Component {
@@ -8,12 +8,13 @@ class MessageList extends Component {
 
         this.state = {
             messages: [],
-            userName: "Sasha"
+            publicKey: localStorage.getItem("publicKey"),
+            userName: localStorage.getItem("userName")
         }
     }
 
     componentDidMount() {
-           axios.get("http://localhost:8080/messages/" + this.state.userName + "/Andrew")
+           axios.get("http://localhost:8080/messages/" + this.state.publicKey + "/" + this.props.companionKey)
                 .then((res) => {
                     if (res) {
                         this.setState({
@@ -25,14 +26,14 @@ class MessageList extends Component {
 
     render() {
         return (
-            <div>
+            <Container>
                 {
                     this.state.messages.map(
                         message =>
-                            <p>{message.message}</p>
+                            <Row class={message.sender === this.state.publicKey ? "text-right" : "text-left"}>{message.sender + ": "}{message.message}</Row>
                     )
                 }
-            </div>
+            </Container>
         )
     }
 }
