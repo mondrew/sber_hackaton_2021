@@ -1,0 +1,17 @@
+version: "3"
+services:
+  backend:
+    build: ./chat-backend
+    image: "blockchain/chat-backend"
+    container_name: "chat-backend"
+    ports:
+      - "8080:8080"
+
+#  frontend:
+#    build: ./chat-frontend
+#    image: "blockchain/chat-frontend"
+#    container_name: "chat-frontend"
+#    ports:
+#      - "80:80"
+#    depends_on:
+#      - backend
