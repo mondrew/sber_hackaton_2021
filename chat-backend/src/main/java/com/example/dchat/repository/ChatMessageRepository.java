@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
@@ -41,8 +42,8 @@ public class ChatMessageRepository {
                 .stream()
                 .skip(1)
                 .flatMap(block -> block.getTransactions().stream())
-                .filter(transaction -> !transaction.getSenderPublicKey().equals("BLOCK_CHAIN_BANK"))
-                .filter(transaction -> !transaction.getSenderPublicKey().equals("BLOCKCHAIN_SERVICE_REG_NEW_USER"))
+                .filter(transaction -> !Objects.equals(transaction.getSenderPublicKey(), "BLOCK_CHAIN_BANK"))
+                .filter(transaction -> !Objects.equals(transaction.getSenderPublicKey(), "BLOCKCHAIN_SERVICE_REG_NEW_USER"))
                 .filter(t -> new Gson().
                         fromJson(t.getMessage(), TransactionMessage.class)
                         .getType().equals("message"))
