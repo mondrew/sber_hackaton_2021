@@ -81,32 +81,85 @@ class SignIn extends Component {
             )
         } else {
             return(
-                <Form>
-                    <Form.Control
-                        type="text"
-                        placeholder="Введите уникальный логин"
-                        value={this.state.userName == null ? "" : this.state.userName}
-                        onChange={this.handleUserNameChange}
-                    />
-                    <Form.Control
-                        type="text"
-                        placeholder="Введите свой публичный ключ"
-                        value={this.state.publicKey == null ? "" : this.state.publicKey}
-                        onChange={this.handlePublicKeyChange}
-                    />
-                    <Form.Control
-                        type="text"
-                        placeholder="Введите свой приватный ключ"
-                        value={this.state.privateKey == null ? "" : this.state.privateKey}
-                        onChange={this.handlePrivateKeyChange}
-                    />                    <Form.Control
-                        type="text"
-                        placeholder="Введите свой номер телефона"
-                        value={this.state.phoneNumber == null ? "" : this.state.phoneNumber}
-                        onChange={this.handlePhoneNumberChange}
-                    />
+                <Form className="p-3">
+                    <Form.Group className="mb-3">
+                        <Form.Label>Логин</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Введите логин"
+                            value={this.state.userName == null ? "" : this.state.userName}
+                            onChange={this.handleUserNameChange}/>
+                        <Form.Text className="text-muted">
+                            Логин будет храниться в блокчейне
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Публичный RSA ключ</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Введите публичный ключ"
+                            value={this.state.publicKey == null ? "" : this.state.publicKey}
+                            onChange={this.handlePublicKeyChange}
+                        />
+                        <Form.Text className="text-muted">
+                            Публичный ключ будет храниться в блокчейне и использоваться для зашифровки сообщений и проверки вашей подписи.
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Приватный RSA ключ</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Введите приватный ключ"
+                            value={this.state.privateKey == null ? "" : this.state.privateKey}
+                            onChange={this.handlePrivateKeyChange}
+                        />
+                        <Form.Text className="text-muted">
+                            Приватный ключ никуда не передается, а будет храниться в вашем локальном хранилище. Будет использоваться для расшифровки и подписи сообщений.
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Дополнительные контактные данные</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Введите дополнительные контактные данные"
+                            value={this.state.phoneNumber == null ? "" : this.state.phoneNumber}
+                            onChange={this.handlePhoneNumberChange}
+                        />
+                        <Form.Text className="text-muted">
+                            Это поле опционально, вы можете оставить вашу электронную почту или номер телефона, чтобы с вами могли связаться по этим каналам.
+                        </Form.Text>
+                    </Form.Group>
                     <Button onClick={this.handleSubmit}>Подтвердить</Button>
                 </Form>
+                // <Form>
+                //     <Form.Control
+                //         type="text"
+                //         placeholder="Введите уникальный логин"
+                //         value={this.state.userName == null ? "" : this.state.userName}
+                //         onChange={this.handleUserNameChange}
+                //     />
+                //     <Form.Control
+                //         type="text"
+                //         placeholder="Введите свой публичный ключ"
+                //         value={this.state.publicKey == null ? "" : this.state.publicKey}
+                //         onChange={this.handlePublicKeyChange}
+                //     />
+                //     <Form.Control
+                //         type="text"
+                //         placeholder="Введите свой приватный ключ"
+                //         value={this.state.privateKey == null ? "" : this.state.privateKey}
+                //         onChange={this.handlePrivateKeyChange}
+                //     />                    <Form.Control
+                //         type="text"
+                //         placeholder="Введите свой номер телефона"
+                //         value={this.state.phoneNumber == null ? "" : this.state.phoneNumber}
+                //         onChange={this.handlePhoneNumberChange}
+                //     />
+                //     <Button onClick={this.handleSubmit}>Подтвердить</Button>
+                // </Form>
             )
         }
     }
