@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import axios from "axios";
-import {Form, Button, Row, Col} from "react-bootstrap";
+import {Form, Button} from "react-bootstrap";
 
 const SERVER_URL = "http://localhost:8080/messages"
 
@@ -48,20 +48,16 @@ class MessageInput extends Component {
     render() {
         return(
             <Form>
-                <Row>
-                    <Col xs={8}>
-                        <Form.Control
-                            autoFocus={true}
-                            type="text"
-                            placeholder="Введите сообщение"
-                            value={this.state.message}
-                            onChange={this.handleChange}
-                        />
-                    </Col>
-                    <Col xs={4}>
-                        <Button onClick={this.handleSubmit}>Отправить</Button>
-                    </Col>
-                </Row>
+                <Form.Group className="d-flex">
+                    <Form.Control
+                        autoFocus={true}
+                        type="text"
+                        placeholder="Введите сообщение"
+                        value={this.state.message}
+                        onChange={this.handleChange}
+                    />
+                    <Button variant="success" onClick={this.handleSubmit}>Отправить</Button>
+                </Form.Group>
             </Form>
         )
     }

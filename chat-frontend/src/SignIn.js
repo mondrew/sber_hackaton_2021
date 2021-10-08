@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, Form, Row} from "react-bootstrap";
+import {Button, Form} from "react-bootstrap";
 import axios from "axios";
 
 const SERVER_URL = "http://localhost:8080/users"
@@ -77,9 +77,7 @@ class SignIn extends Component {
     render() {
         if (this.checkAuth()) {
             return (
-                <Row>
-                    <p>Ваш логин {this.state.userName}, ваш публичный ключ {this.state.publicKey}</p>
-                </Row>
+                <h3 className='mt-2 text-center'>Ваш логин: {this.state.userName}</h3>
             )
         } else {
             return(

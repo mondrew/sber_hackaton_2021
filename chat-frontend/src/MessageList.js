@@ -1,6 +1,14 @@
 import React, {Component} from "react";
-import {Container, Row} from "react-bootstrap";
+import {ListGroup} from "react-bootstrap";
+import ImageListItem from "./MessageListItem"
 import axios from "axios";
+
+const listStyles = {
+    height: '80vh',
+    border: '1px solid rgba(0,0,0,.4)',
+    borderRadius: '4px',
+    overflow: 'auto'
+}
 
 class MessageList extends Component {
     constructor(props) {
@@ -10,8 +18,6 @@ class MessageList extends Component {
             publicKey: localStorage.getItem("publicKey"),
             userName: localStorage.getItem("userName"),
         }
-
-        // this.getLoginByPublicKey = this.getLoginByPublicKey.bind(this)
     }
 
     componentDidMount() {
@@ -36,14 +42,16 @@ class MessageList extends Component {
 
     render() {
         return (
-            <Container>
-                {
-                    this.state.messages.map(
-                        message =>
-                            <Row class={message.senderPublicKey === this.state.publicKey ? "text-right" : "text-left"}>{message.senderPublicKey + ": "}{message.message}</Row>
-                    )
-                }
-            </Container>
+            <ListGroup variant='flush' style={listStyles}>
+                {this.state.messages.map((message) => (
+                            <ImageListItem
+                                currentUser={message.senderPublicKey === this.state.publicKey}
+                                senderName={message.senderPublicKey}
+                                messageText={message.message}
+                                dateTime={message.timestamp}
+                            />
+                ))}
+            </ListGroup>
         )
     }
 }
